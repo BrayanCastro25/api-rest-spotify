@@ -25,6 +25,12 @@ app.use(express.urlencoded({extended: true}));
 // Cargar configuraciones de rutas
 
 // Ruta de prueba
+app.get("/ruta-prueba", (req, res) => {
+    return res.status(200).json({
+        status: "succes",
+        message: "Ruta de prueba"
+    })
+})
 
 // Poner el servidor a escuchar peticiones HTTP
 app.listen(port, () => {
