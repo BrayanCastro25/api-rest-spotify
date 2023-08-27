@@ -43,7 +43,7 @@ const register = (req, res) => {
             {nick: params.nick.toLowerCase()}
         ]
     })
-        .then(async (users) => {
+        .then((users) => {
             if(users && users.length >= 1){
                 return res.status(200).json({
                     status: "error",
@@ -52,23 +52,32 @@ const register = (req, res) => {
             }
 
             // Cifrar la contraseña
-            let pwd = await bcrypt.hash(params.password, 10);
-            params.password = pwd;
+            bcrypt.hash(params.password, 10, (error, pwd) => {
+                params.password = pwd;
 
-            // Crear objeto del usuario
-            let userToSave = new User(params);
+                // Crear objeto del usuario
+                let userToSave = new User(params);
+                console.log(userToSave)
 
-            // Guardar usuario en la BD
+                // Guardar usuario en la BD
+                userToSave.save()
+                    .then((userStored) => {
+                        // Limpiar el objeto a devolver
 
-            // Limpiar el objeto a devolver
-
-            // Devolver un resultado
-
-            return res.status(200).json({
-                status: "success",
-                message: "Método de registro",
-                userToSave
-            })
+                        // Devolver un resultado
+                        return res.status(200).json({
+                            status: "success",
+                            message: "Usuario guardado correctamente",
+                            user: userStored
+                        })
+                    })
+                    .catch((error) => {
+                        return res.status(400).json({
+                            status: "error",
+                            message: "Error al guardar el usuario en la BD"
+                        })
+                    });       
+            });     
         })
         .catch((error) => {
             return res.status(500).json({
