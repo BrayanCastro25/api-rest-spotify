@@ -1,6 +1,12 @@
 // Importación de helpers
 const validate = require("../helpers/validate");
 
+// Importar modelo
+const User = require("../models/user");
+
+// Importar paquetes
+const bcrypt = require('bcrypt');
+
 const prueba = (req, res) => {
     return res.status(200).json({
         status: "success",
@@ -31,21 +37,46 @@ const register = (req, res) => {
     }
 
     // Control de usuarios duplicados
-
-    // Cifrar la contraseña
-
-    // Crear objeto del usuario
-
-    // Guardar usuario en la BD
-
-    // Limpiar el objeto a devolver
-
-    // Devolver un resultado
-
-    return res.status(200).json({
-        status: "success",
-        message: "Método de registro"
+    User.find({
+        $or: [
+            {email: params.email.toLowerCase()},
+            {nick: params.nick.toLowerCase()}
+        ]
     })
+        .then(async (users) => {
+            if(users && users.length >= 1){
+                return res.status(200).json({
+                    status: "error",
+                    message: "El usuario ya existe"
+                })
+            }
+
+            // Cifrar la contraseña
+            let pwd = await bcrypt.hash(params.password, 10);
+            params.password = pwd;
+
+            // Crear objeto del usuario
+            let userToSave = new User(params);
+
+            // Guardar usuario en la BD
+
+            // Limpiar el objeto a devolver
+
+            // Devolver un resultado
+
+            return res.status(200).json({
+                status: "success",
+                message: "Método de registro",
+                userToSave
+            })
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: "error",
+                message: "Error al realizar a consulta de usuarios duplicados"
+            })
+        });
+
 };
 
 module.exports = {
