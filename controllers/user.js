@@ -63,12 +63,15 @@ const register = (req, res) => {
                 userToSave.save()
                     .then((userStored) => {
                         // Limpiar el objeto a devolver
+                        userCreated = userStored.toObject();
+                        delete userCreated.password;
+                        delete userCreated.role;
 
                         // Devolver un resultado
                         return res.status(200).json({
                             status: "success",
                             message: "Usuario guardado correctamente",
-                            user: userStored
+                            user: userCreated
                         })
                     })
                     .catch((error) => {
