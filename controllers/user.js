@@ -6,6 +6,7 @@ const User = require("../models/user");
 
 // Importar paquetes
 const bcrypt = require('bcrypt');
+const jwt = require("../helpers/jwt");
 
 const prueba = (req, res) => {
     return res.status(200).json({
@@ -105,7 +106,7 @@ const login = (req, res) => {
 
     // Buscar en la BD si existe el email
     User.findOne({email: params.email})
-        .select("+password")
+        .select("+password +role")
         .then((user) => {
             // Comprobar su contraseña
             const pwd = bcrypt.compareSync(params.password, user.password);
@@ -119,15 +120,17 @@ const login = (req, res) => {
 
             let identityUser = user.toObject();
             delete identityUser.password;
+            delete identityUser.role;
 
             // Conseguir token JWT (Crear servicio que permita crear el Token)
+            const token = jwt.createToken(user);
 
             // Devolver datos usuario y Token
-
             return res.status(200).json({
                 status: "success",
                 message: "Método de login",
-                user: identityUser
+                user: identityUser,
+                token 
             })
         })
         .catch((error) => {
