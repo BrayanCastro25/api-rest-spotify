@@ -168,9 +168,96 @@ const profile = (req, res) => {
 
 }
 
+
+const update = (req, res) => {
+    // Recoger datos usuario identificado
+    let userIdentity = req.user;
+
+    // Recoger datos body
+    let userToUpdate = req.body;
+
+    // Validar los datos
+    try{
+        validate(userToUpdate);        
+    }catch(error){
+        return res.status(400).json({
+            status: "error",
+            message: "Validación no superada"
+        });
+    }
+
+    // Comprobar si el usuario existe
+    User.find({
+        $or: [
+            {email: userToUpdate.email.toLowerCase()},
+            {nick: userToUpdate.nick.toLowerCase()},
+        ]
+    })
+        .then(async (users) => {
+            // Comprobar si el usuario existe y no soy yo (el identificado)
+            let userIsset = false;
+            
+            users.forEach(user => {
+                if(user && user._id != userIdentity.id){
+                    userIsset = true;
+                }
+            });
+
+            // Si ya existe devuelve un mensaje
+            if(userIsset){
+                return res.status(200).json({
+                    status: "success",
+                    message: "El usuario ya existe"
+                });
+            }
+
+            // Cifrar password si me llega
+            if(userToUpdate.password){
+                let pwd = await bcrypt.hash(userToUpdate.password, 10);
+                userToUpdate.password = pwd;
+            }else{
+                delete userToUpdate.password;
+            }
+
+            try{
+                // Buscar el usuario en la BD y actualizar datos
+                let userUpdated = await User.findByIdAndUpdate({_id: userIdentity.id}, userToUpdate, {new:true});
+
+                if(!userUpdated){
+                    return res.status(400).json({
+                        status: "error",
+                        message: "Error al actualizar"
+                    });
+                }
+
+                // Devolver respuesta
+                return res.status(200).json({
+                    status: "success",
+                    message: "Metodo actualizar datos usuario",
+                    user: userUpdated
+                });
+            }catch(error){
+                return res.status(500).json({
+                    status: "error",
+                    message: "Error al actualizar"
+                });
+            }
+            
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "Error al consultar usuario",
+                id
+            })
+        });
+};
+
+
 module.exports = {
     prueba,
     register,
     login,
-    profile
+    profile,
+    update
 }

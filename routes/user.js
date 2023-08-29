@@ -12,7 +12,8 @@ const UserController = require("../controllers/user");
 router.get("/test", check.auth, UserController.prueba);
 router.post("/register", UserController.register);
 router.post("/login", UserController.login);
-router.get("/profile/:id", check.auth, UserController.profile)
+router.get("/profile/:id", check.auth, UserController.profile);
+router.put("/update", check.auth, UserController.update);
 
 // Exportar router
 module.exports = router;
