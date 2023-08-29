@@ -142,8 +142,35 @@ const login = (req, res) => {
 
 };
 
+const profile = (req, res) => {
+
+    // Recoger id user url
+    const id = req.params.id;
+
+    // Consulta para sacar los datos del perfil
+    User.findById(id)
+        .then((userProfile) => {
+
+            // Devolver resultado
+            return res.status(200).json({
+                status: "success",
+                message: "Metodo de perfil",
+                userProfile
+            })
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "No se encontró el perfil del usuario",
+                id
+            })
+        })
+
+}
+
 module.exports = {
     prueba,
     register,
-    login
+    login,
+    profile
 }
