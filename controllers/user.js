@@ -91,7 +91,27 @@ const register = (req, res) => {
 
 };
 
+const login = (req, res) => {
+    // Recoger los parámetros de la petición
+
+    // Comprobar que me llegan
+
+    // Buscar en la BD si existe el email
+
+    // Comprobar su contraseña
+
+    // Conseguir token JWT (Crear servicio que permita crear el Token)
+
+    // Devolver datos usuario y Token
+
+    return res.status(200).json({
+        status: "success",
+        message: "Método de login"
+    })
+};
+
 module.exports = {
     prueba,
-    register
+    register,
+    login
 }
