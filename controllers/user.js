@@ -93,21 +93,50 @@ const register = (req, res) => {
 
 const login = (req, res) => {
     // Recoger los parámetros de la petición
+    let params = req.body;
 
     // Comprobar que me llegan
+    if(!params.email || !params.password){
+        return res.status(400).json({
+            status: "error",
+            message: "Faltan datos por enviar"
+        });
+    }
 
     // Buscar en la BD si existe el email
+    User.findOne({email: params.email})
+        .select("+password")
+        .then((user) => {
+            // Comprobar su contraseña
+            const pwd = bcrypt.compareSync(params.password, user.password);
 
-    // Comprobar su contraseña
+            if(!pwd){
+                return res.status(400).json({
+                    status: "error",
+                    message: "Login incorrecto"
+                });
+            }
 
-    // Conseguir token JWT (Crear servicio que permita crear el Token)
+            let identityUser = user.toObject();
+            delete identityUser.password;
 
-    // Devolver datos usuario y Token
+            // Conseguir token JWT (Crear servicio que permita crear el Token)
 
-    return res.status(200).json({
-        status: "success",
-        message: "Método de login"
-    })
+            // Devolver datos usuario y Token
+
+            return res.status(200).json({
+                status: "success",
+                message: "Método de login",
+                user: identityUser
+            })
+        })
+        .catch((error) => {
+            return res.status(400).json({
+                status: "error",
+                message: "No existe el usuario"
+            })
+        });
+
 };
 
 module.exports = {

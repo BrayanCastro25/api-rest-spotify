@@ -21,7 +21,7 @@ const UserSchema = Schema({
     password: {
         type: String,
         required: true,
-        select: false
+        select: false       // Evita que devuelva este dato en las consultas de Find
     },
     role: {
         type: String,
