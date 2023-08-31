@@ -8,6 +8,8 @@ const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const jwt = require("../helpers/jwt");
 const fs = require("fs");
+const path = require("path");
+
 
 const prueba = (req, res) => {
     return res.status(200).json({
@@ -303,11 +305,35 @@ const upload = (req, res) => {
     
 };
 
+
+const avatar = (req, res) => {
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Montar el path real de la imagen
+    const filePath = "./uploads/avatars/" + file;
+
+    // Comprobar que existe el fichero
+    fs.stat(filePath, (error, exists) => {
+        if(error || !exists){
+            return res.status(404).json({
+                status: "error",
+                message: "No existe la imagen"
+            })
+        }
+
+        return res.sendFile(path.resolve(filePath))
+    })
+
+    // Devolve el fichero
+};
+
 module.exports = {
     prueba,
     register,
     login,
     profile,
     update,
-    upload
+    upload,
+    avatar
 }
