@@ -254,10 +254,31 @@ const update = (req, res) => {
 };
 
 
+const upload = (req, res) => {
+    // Configuración de subida (multer)
+
+    // Recoger fichero de imagen y comprobar si existe
+
+    // Conseguir el nombre de la imagen
+
+    // Sacar info de la imagen
+
+    // Comprobar si la extensión es válida
+
+    // Si es correcto, guardar la imagen en la BBDD
+
+    return res.status(200).json({
+        status: "success",
+        message: "Metodo cargar imagen",
+        file: req.file
+    })
+};
+
 module.exports = {
     prueba,
     register,
     login,
     profile,
-    update
+    update,
+    upload
 }
