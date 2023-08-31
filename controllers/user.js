@@ -7,6 +7,7 @@ const User = require("../models/user");
 // Importar paquetes
 const bcrypt = require('bcrypt');
 const jwt = require("../helpers/jwt");
+const fs = require("fs");
 
 const prueba = (req, res) => {
     return res.status(200).json({
@@ -255,23 +256,51 @@ const update = (req, res) => {
 
 
 const upload = (req, res) => {
-    // Configuración de subida (multer)
-
     // Recoger fichero de imagen y comprobar si existe
+    if(!req.file){
+        return res.status(404).json({
+            status: "error",
+            message: "La petición no incluye la imagen",
+        })
+    }
 
     // Conseguir el nombre de la imagen
+    let image = req.file.originalname;
 
     // Sacar info de la imagen
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[1];
 
     // Comprobar si la extensión es válida
+    if(extension != "jpg" && extension != "png" && extension != "gif" && extension != "jpeg"){
+        // Borrar archivo
+        const filePath = req.file.path;
+        const fileDeleted = fs.unlinkSync(filePath);
+
+        // Devover error
+        return res.status(400).json({
+            status: "error",
+            message: "La extensión no es válida"
+        })
+    }
 
     // Si es correcto, guardar la imagen en la BBDD
+    User.findOneAndUpdate({_id: req.user.id}, {image: req.file.filename}, {new: true})
+        .then((userUpdated) => {
+            return res.status(200).json({
+                status: "success",
+                user: userUpdated,
+                file: req.file
+            });
+        })
+        .catch((error) => {
+            return res.status(200).json({
+                status: "error",
+                message: "Error en la subida de la imagen"
+            });
+        })
 
-    return res.status(200).json({
-        status: "success",
-        message: "Metodo cargar imagen",
-        file: req.file
-    })
+    
 };
 
 module.exports = {
