@@ -34,7 +34,31 @@ const save = (req, res) => {
     
 };
 
+
+const profile = (req, res) => {
+    // Sacar el parametro por la url
+    const artistId = req.params.id;
+
+    // Find
+    Artist.findById(artistId)
+        .then((artistFound) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Acción de mostrar un artista",
+                artistFound
+            });
+        })
+        .catch((error) => {
+            return res.status(200).json({
+                status: "error",
+                message: "No existe el artista"
+            });
+        });
+};
+
+
 module.exports = {
     prueba,
-    save
+    save,
+    profile
 }
