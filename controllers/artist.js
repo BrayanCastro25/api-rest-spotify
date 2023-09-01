@@ -3,6 +3,8 @@ const Artist = require("../models/artist");
 
 // Importar dependencias
 const mongoosePagination = require("mongoose-pagination");
+const fs = require("fs");
+const path = require("path");
 
 const prueba = (req, res) => {
     return res.status(200).json({
@@ -152,11 +154,89 @@ const remove = async(req, res) => {
 };
 
 
+const upload = (req, res) => {
+
+    // Recoger artist id
+    let artistId = req.params.id;
+
+    // Recoger fichero de imagen y comprobar si existe
+    if(!req.file){
+        return res.status(404).json({
+            status: "error",
+            message: "La petición no incluye la imagen",
+        })
+    }
+
+    // Conseguir el nombre de la imagen
+    let image = req.file.originalname;
+
+    // Sacar info de la imagen
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[1];
+
+    // Comprobar si la extensión es válida
+    if(extension != "jpg" && extension != "png" && extension != "gif" && extension != "jpeg"){
+        // Borrar archivo
+        const filePath = req.file.path;
+        const fileDeleted = fs.unlinkSync(filePath);
+
+        // Devover error
+        return res.status(400).json({
+            status: "error",
+            message: "La extensión no es válida"
+        })
+    }
+
+    // Si es correcto, guardar la imagen en la BBDD
+    Artist.findOneAndUpdate({_id: artistId}, {image: req.file.filename}, {new: true})
+        .then((artistUpdated) => {
+            return res.status(200).json({
+                status: "success",
+                artist: artistUpdated,
+                file: req.file
+            });
+        })
+        .catch((error) => {
+            return res.status(200).json({
+                status: "error",
+                message: "Error en la subida de la imagen del artista"
+            });
+        })
+
+    
+};
+
+
+const image = (req, res) => {
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Montar el path real de la imagen
+    const filePath = "./uploads/artists/" + file;
+
+    // Comprobar que existe el fichero
+    fs.stat(filePath, (error, exists) => {
+        if(error || !exists){
+            return res.status(404).json({
+                status: "error",
+                message: "No existe la imagen"
+            })
+        }
+
+        return res.sendFile(path.resolve(filePath))
+    })
+
+    // Devolve el fichero
+};
+
+
 module.exports = {
     prueba,
     save,
     profile,
     list,
     update,
-    remove
+    remove,
+    upload,
+    image
 }
