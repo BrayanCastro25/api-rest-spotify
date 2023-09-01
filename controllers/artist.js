@@ -52,7 +52,7 @@ const profile = (req, res) => {
             });
         })
         .catch((error) => {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: "error",
                 message: "No existe el artista"
             });
@@ -97,9 +97,35 @@ const list = (req, res) => {
 
 };
 
+
+const update = (req, res) => {
+    // Recoger id artista
+    const id = req.params.id;
+
+    // Recoger datos del body
+    const data = req.body
+
+    // Buscar y actualizar artista
+    Artist.findByIdAndUpdate(id, data, {new: true})
+        .then((artistUpdated) => {
+            return res.status(200).json({
+                status: "Artista actualizado exitosamente",
+                artistUpdated
+            });
+        })
+        .catch((error) => {
+            return res.status(200).json({
+                status: "error",
+                message: "No se ha actualizado el artista"
+            });
+        });
+
+}
+
 module.exports = {
     prueba,
     save,
     profile,
-    list
+    list,
+    update
 }
