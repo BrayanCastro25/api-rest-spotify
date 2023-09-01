@@ -1,6 +1,9 @@
 // Importar modelo
 const Artist = require("../models/artist");
 
+// Importar dependencias
+const mongoosePagination = require("mongoose-pagination");
+
 const prueba = (req, res) => {
     return res.status(200).json({
         status: "success",
@@ -66,16 +69,23 @@ const list = (req, res) => {
     }
 
     // Definir número de elementos por página
-    const itemsPerPage = 5;
+    const itemsPerPage = 2;
 
     // Find, ordenarlo y paginarlo
     Artist.find()
         .sort("name")
-        .then((artists) => {
+        .paginate(page, itemsPerPage)
+        .then(async (artists) => {
+
+            const totalArtists = await Artist.countDocuments({"__v": 0}).exec();
+
             return res.status(200).json({
                 status: "success",
                 message: "Metodo listar artistas",
-                artists
+                artists,
+                totalArtists,
+                page,
+                pages: Math.ceil(totalArtists/itemsPerPage)
             });
         })
         .catch((error) => {
