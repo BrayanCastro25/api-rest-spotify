@@ -57,8 +57,39 @@ const profile = (req, res) => {
 };
 
 
+const list = (req, res) => {
+    // Sacar la página
+    let page = 1;
+
+    if(req.params.page){
+        page = req.params.page;
+    }
+
+    // Definir número de elementos por página
+    const itemsPerPage = 5;
+
+    // Find, ordenarlo y paginarlo
+    Artist.find()
+        .sort("name")
+        .then((artists) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Metodo listar artistas",
+                artists
+            });
+        })
+        .catch((error) => {
+            return res.status(400).json({
+                status: "error",
+                message: "Error al listar los artistas"
+            });
+        });
+
+};
+
 module.exports = {
     prueba,
     save,
-    profile
+    profile,
+    list
 }
