@@ -122,10 +122,41 @@ const update = (req, res) => {
 
 }
 
+
+const remove = async(req, res) => {
+    // Sacar el id del artista de la url
+    const artistId = req.params.id;
+
+    try{
+        // Hacer consulta para buscar y eliminar el artista con un await
+        const artistRemoved = await Artist.findByIdAndDelete(artistId);
+
+        // Eliminar albumes
+
+        // Eliminar canciones
+
+        // Devolver resultado
+
+        return res.status(200).json({
+            status: "success",
+            message: "Método eliminar artista",
+            artistRemoved
+        });
+    }catch(error){
+        return res.status(400).json({
+            status: "error",
+            message: "Error al eliminar el artista"
+        });
+    }
+    
+};
+
+
 module.exports = {
     prueba,
     save,
     profile,
     list,
-    update
+    update,
+    remove
 }

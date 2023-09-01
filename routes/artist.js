@@ -14,6 +14,7 @@ router.post("/save", check.auth, ArtistController.save);
 router.get("/profile/:id", check.auth, ArtistController.profile);
 router.get("/list/:page?", check.auth, ArtistController.list);
 router.put("/update/:id", check.auth, ArtistController.update);
+router.delete("/remove/:id", check.auth, ArtistController.remove)
 
 // Exportar router
 module.exports = router;
