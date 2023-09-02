@@ -31,10 +31,33 @@ const save = (req, res) => {
                 message: "Error al guardar el album"
             });
         });
-
 }
+
+const one = (req, res) => {
+    // Sacar el id del album
+    albumId = req.params.id;
+
+    // Find y popular el artista
+    Album.findById(albumId)
+        .populate("artist")
+        .then((album) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Metodo mostrar album",
+                album
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "Error al consultar el album"
+            });
+        });
+
+};
 
 module.exports = {
     prueba,
-    save
+    save,
+    one
 }

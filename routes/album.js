@@ -10,7 +10,8 @@ const AlbumController = require("../controllers/album");
 
 // Definir rutas
 router.get("/test", AlbumController.prueba);
-router.post("/save", check.auth, AlbumController.save)
+router.post("/save", check.auth, AlbumController.save);
+router.get("/one/:id", check.auth, AlbumController.one);
 
 // Exportar router
 module.exports = router;
