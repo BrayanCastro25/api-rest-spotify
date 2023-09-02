@@ -1,22 +1,25 @@
 const {Schema, model} = require("mongoose");
 
-const AlbumSchema = Schema({
-    artist: {
+const SongSchema = Schema({
+    album: {
         type: Schema.ObjectId,
-        ref: "Artist"
+        ref: "Album"
     },
-    title: {
-        type: String,
-        required: true
-    },
-    description: String,
-    year: {
+    track: {
         type: Number,
         required: true
     },
-    image: {
+    name: {
         type: String,
-        default: "default.png"
+        required: true
+    },
+    duration: {
+        type: String,
+        required: true
+    },
+    file: {
+        type: String,
+        required: true,
     },
     created_at: {
         type: Date,
@@ -24,5 +27,4 @@ const AlbumSchema = Schema({
     }
 });
 
-
-module.exports = model("Album", AlbumSchema, "albums");
+module.exports = model("Song", SongSchema, "songs");
