@@ -56,8 +56,38 @@ const one = (req, res) => {
 
 };
 
+const list = (req, res) => {
+    // Sacar el id del artista de la url
+    const artistId = req.params.artistId;
+
+    if(!artistId){
+        return res.status(404).json({
+            status: "error",
+            message: "Falta el ID del artista en la petición"
+        });
+    }
+
+    // Sacar todos los albums de la BBDD de un artista en concreto
+    Album.find({artist: artistId}).populate("artist")
+        .then((albums) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Metodo listar albums",
+                albums
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "Error en la consulta de los albums"
+            });
+        });
+
+};
+
 module.exports = {
     prueba,
     save,
-    one
+    one,
+    list
 }
