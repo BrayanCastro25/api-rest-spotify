@@ -54,8 +54,40 @@ const one = (req, res) => {
         });
 };
 
+const list = (req, res) => {
+    // Recoger Id de album
+    const albumId = req.params.id;
+
+    // Find 
+    Song.find({album: albumId})
+        // Hacer un populate dentro de otro populate
+        .populate({
+            path: "album",
+            populate: {
+                path: "artist",
+                model: "Artist"
+            }
+        })
+        .sort("track")
+        .then((songsAlbum) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Método para listar las canciones de un album",
+                songsAlbum
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "No existe el album"
+            });
+        });
+
+};
+
 module.exports = {
     prueba,
     save,
-    one
+    one,
+    list
 }
