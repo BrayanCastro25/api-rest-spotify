@@ -85,9 +85,35 @@ const list = (req, res) => {
 
 };
 
+const update = (req, res) => {
+    // Recoger parametro por url
+    const songId = req.params.songId;
+
+    // Recoger los datos para actualizar
+    const data = req.body;
+
+    // Busqueda y actualización
+    Song.findByIdAndUpdate(songId, data, {new: true})
+        .then((songUpdated) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Método para actualizar canción",
+                songUpdated
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "No existe la canción"
+            });
+        });
+    
+};
+
 module.exports = {
     prueba,
     save,
     one,
-    list
+    list,
+    update
 }

@@ -15,6 +15,7 @@ router.get("/test", SongController.prueba);
 router.post("/save", check.auth, SongController.save);
 router.get("/one/:id", check.auth, SongController.one);
 router.get("/list/:id", check.auth, SongController.list);
+router.put("/update/:songId", check.auth, SongController.update);
 
 // Exportar router
 module.exports = router;
