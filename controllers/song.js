@@ -33,7 +33,29 @@ const save = (req, res) => {
     
 };
 
+
+const one = (req, res) => {
+    let songId = req.params.id;
+
+    Song.findById(songId)
+        .populate("album")
+        .then((song) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Método para mostrar una canción",
+                song
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "La canción no existe"
+            });
+        });
+};
+
 module.exports = {
     prueba,
-    save
+    save,
+    one
 }
