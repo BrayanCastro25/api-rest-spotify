@@ -1,4 +1,5 @@
 // Importación de modelo
+const album = require("../models/album");
 const Album = require("../models/album");
 
 const prueba = (req, res) => {
@@ -85,9 +86,35 @@ const list = (req, res) => {
 
 };
 
+
+const update = (req, res) => {
+    // Recoger parametro por url
+    const albumId = req.params.albumId;
+
+    // Recoger el body
+    const params = req.body;
+
+    // Find y update
+    Album.findByIdAndUpdate(albumId, params, {new: true})
+        .then((albumUpdated) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Método para actualizar un album",
+                album: albumUpdated
+            });
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: "error",
+                message: "No se ha actualizado el album"
+            });
+        });
+};
+
 module.exports = {
     prueba,
     save,
     one,
-    list
+    list,
+    update
 }
