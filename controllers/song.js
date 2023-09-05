@@ -1,5 +1,8 @@
 const Song = require("../models/song");
 
+const fs = require("fs");
+const path = require("path");
+
 const prueba = (req, res) => {
     return res.status(200).json({
         status: "success",
@@ -131,11 +134,88 @@ const remove = (req, res) => {
 
 };
 
+const upload = (req, res) => {
+
+    // Recoger song id
+    let songId = req.params.id;
+
+    // Recoger fichero de audio y comprobar si existe
+    if(!req.file){
+        return res.status(404).json({
+            status: "error",
+            message: "La petición no incluye el audio",
+        })
+    }
+
+    // Conseguir el nombre de la imagen
+    let image = req.file.originalname;
+
+    // Sacar info de la imagen
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[1];
+
+    // Comprobar si la extensión es válida
+    if(extension != "mp3" && extension != "ogg"){
+        // Borrar archivo
+        const filePath = req.file.path;
+        const fileDeleted = fs.unlinkSync(filePath);
+
+        // Devover error
+        return res.status(400).json({
+            status: "error",
+            message: "La extensión no es válida"
+        })
+    }
+
+    // Si es correcto, guardar la imagen en la BBDD
+    Song.findOneAndUpdate({_id: songId}, {file: req.file.filename}, {new: true})
+        .then((songUpdated) => {
+            return res.status(200).json({
+                status: "success",
+                song: songUpdated,
+                file: req.file
+            });
+        })
+        .catch((error) => {
+            return res.status(200).json({
+                status: "error",
+                message: "Error en la subida de la imagen del artista"
+            });
+        })
+
+    
+};
+
+
+const audio = (req, res) => {
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Montar el path real de la imagen
+    const filePath = "./uploads/songs/" + file;
+
+    // Comprobar que existe el fichero
+    fs.stat(filePath, (error, exists) => {
+        if(error || !exists){
+            return res.status(404).json({
+                status: "error",
+                message: "No existe la imagen"
+            })
+        }
+
+        return res.sendFile(path.resolve(filePath))
+    })
+
+    // Devolve el fichero
+};
+
 module.exports = {
     prueba,
     save,
     one,
     list,
     update,
-    remove
+    remove,
+    upload,
+    audio
 }
