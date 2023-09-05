@@ -110,10 +110,32 @@ const update = (req, res) => {
     
 };
 
+
+const remove = (req, res) => {
+    const songId = req.params.id;
+
+    Song.findByIdAndRemove(songId)
+        .then((songRemoved) => {
+            return res.status(200).json({
+                status: "success",
+                message: "Método para remover una canción",
+                songRemoved
+            });
+        })
+        .catch((error) => {
+            return res.status(404).json({
+                status: "error",
+                message: "No existe la canción"
+            });
+        });
+
+};
+
 module.exports = {
     prueba,
     save,
     one,
     list,
-    update
+    update,
+    remove
 }
