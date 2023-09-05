@@ -1,5 +1,6 @@
 // Importación de modelo
 const Album = require("../models/album");
+const Song = require("../models/song");
 
 // Importar dependencias
 const fs = require("fs");
@@ -190,6 +191,31 @@ const image = (req, res) => {
     // Devolve el fichero
 };
 
+const remove = async(req, res) => {
+    // Sacar el id del album de la url
+    const albumId = req.params.id;
+
+    try{
+        // Hacer consulta para buscar y eliminar el album con un await
+        const albumRemoved = await Album.findById(albumId).deleteOne();
+        const songRemoved = await Song.find({album: albumId}).deleteMany();
+
+        // Devolver resultado
+        return res.status(200).json({
+            status: "success",
+            message: "Método eliminar artista",
+            albumRemoved,
+            songRemoved
+        });
+    }catch(error){
+        return res.status(400).json({
+            status: "error",
+            message: "Error al eliminar el album o canciones"
+        });
+    }
+    
+};
+
 module.exports = {
     prueba,
     save,
@@ -197,5 +223,6 @@ module.exports = {
     list,
     update,
     upload,
-    image
+    image,
+    remove
 }
